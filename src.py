@@ -1,4 +1,4 @@
-# Open a file dialog and extract spectral information, aggregate to file
+# Opens a .wav file(s) and extracts spectral information, aggregates to file
 import essentia
 from essentia.standard import *
 from heightmap import getFrames
@@ -12,14 +12,16 @@ root = tk.Tk()
 root.withdraw()
 fileNames = tkFileDialog.askopenfilenames()
 
+#Create an array of audio signals, use Essentia loader to use with Extractor()
+## Add audio to array
 loadedAudioFiles = []
 
 
 for fileName in fileNames:
-	loader = EqloudLoader(filename = fileName)
+	loader = MonoLoader(filename = fileName)
 	loadedAudioFiles.append(loader())
 
-
+##Create arrays for analysis data and load essentia analysis algorithm Extractor()
 dataPools = []
 dataPoolsAggregated = []
 specFrames = []
@@ -27,7 +29,8 @@ specFramesAggregated = []
 extractor = Extractor()
 
 
-
+## Here we get the raw analysis data and spectra (from heightmap.py), as well as a supplementary aggregated file
+## aggregated files will allow for easier implementation of system constraints later on, following analysis of test inputs
 for audioFile in loadedAudioFiles:
 	currentExtractor = extractor(audioFile)
 	currentFrames = getFrames(audioFile, 1024)
@@ -36,6 +39,7 @@ for audioFile in loadedAudioFiles:
 	specFrames.append(currentFrames)
 	specFramesAggregated.append(PoolAggregator(defaultStats = ["mean", "min", "max",])(currentFrames))
 
+# Output to .json
 
 
 # Output JSON
